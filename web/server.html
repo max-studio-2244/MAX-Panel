@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Management - MAX Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="server-app">
+        <!-- Header -->
+        <header class="bg-gray-800 shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="/" class="text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </a>
+                        <h1 class="text-2xl font-bold text-white" id="server-name">Loading...</h1>
+                        <span class="px-3 py-1 rounded-full text-sm" id="server-status">
+                            <i class="fas fa-circle mr-1"></i>Offline
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-400" id="server-info">
+                            <span id="server-ip">0.0.0.0</span>:<span id="server-port">25565</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="startServer()" id="start-btn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-play mr-2"></i>Start
+                            </button>
+                            <button onclick="restartServer()" id="restart-btn" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-redo mr-2"></i>Restart
+                            </button>
+                            <button onclick="stopServer()" id="stop-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-stop mr-2"></i>Stop
+                            </button>
+                            <button onclick="killServer()" id="kill-btn" class="bg-red-800 hover:bg-red-900 px-4 py-2 rounded-lg">
+                                <i class="fas fa-skull mr-2"></i>Kill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-gray-800 border-t border-gray-700">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-8">
+                    <button onclick="showTab('console')" class="tab-btn active py-4 px-2 border-b-2 border-blue-500 text-blue-400">
+                        <i class="fas fa-terminal mr-2"></i>Console
+                    </button>
+                    <button onclick="showTab('files')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-folder mr-2"></i>File Manager
+                    </button>
+                    <button onclick="showTab('databases')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-database mr-2"></i>Databases
+                    </button>
+                    <button onclick="showTab('backups')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-archive mr-2"></i>Backups
+                    </button>
+                    <button onclick="showTab('network')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-network-wired mr-2"></i>Network
+                    </button>
+                    <button onclick="showTab('startup')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-play-circle mr-2"></i>Startup
+                    </button>
+                    <button onclick="showTab('settings')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                    <button onclick="showTab('activity')" class="tab-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-history mr-2"></i>Activity
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Console Tab -->
+            <div id="tab-console" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Console Output -->
+                    <div class="lg:col-span-3">
+                        <div class="bg-gray-800 rounded-lg">
+                            <div class="p-4 border-b border-gray-700">
+                                <h3 class="text-lg font-semibold">Server Console</h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="console-output" class="bg-black rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm text-green-400 mb-4"></div>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="console-input" placeholder="Enter command..." class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                                    <button onclick="sendCommand()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Server Info Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Server Status -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-semibold mb-3">Server Information</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Status:</span>
+                                    <span id="sidebar-status" class="text-red-400">Offline</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>IP Address:</span>
+                                    <span id="sidebar-ip" class="text-gray-300">0.0.0.0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Port:</span>
+                                    <span id="sidebar-port" class="text-gray-300">25565</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Uptime:</span>
+                                    <span id="sidebar-uptime" class="text-gray-300">0m</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resource Usage -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-semibold mb-3">Resource Usage</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>CPU</span>
+                                        <span id="cpu-usage">0%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div id="cpu-bar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Memory</span>
+                                        <span id="memory-usage">0 MB / 1024 MB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div id="memory-bar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Disk</span>
+                                        <span id="disk-usage">0 MB / 5000 MB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div id="disk-bar" class="bg-yellow-500 h-2 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-semibold mb-3">Quick Actions</h4>
+                            <div class="space-y-2">
+                                <button onclick="sendCommand('save-all')" class="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm">
+                                    <i class="fas fa-save mr-2"></i>Save World
+                                </button>
+                                <button onclick="sendCommand('list')" class="w-full bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm">
+                                    <i class="fas fa-users mr-2"></i>List Players
+                                </button>
+                                <button onclick="sendCommand('whitelist reload')" class="w-full bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded text-sm">
+                                    <i class="fas fa-shield-alt mr-2"></i>Reload Whitelist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Manager Tab -->
+            <div id="tab-files" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg">
+                    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <h3 class="text-lg font-semibold">File Manager</h3>
+                            <div class="text-sm text-gray-400" id="current-path">/</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="uploadFile()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <button onclick="createFolder()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-folder-plus mr-2"></i>New Folder
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div id="file-list" class="space-y-2">
+                            <!-- Files will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other tabs content (simplified for brevity) -->
+            <div id="tab-databases" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Database Management</h3>
+                    <p class="text-gray-400">Database management features coming soon...</p>
+                </div>
+            </div>
+
+            <div id="tab-backups" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Backups</h3>
+                        <button onclick="createBackup()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Create Backup
+                        </button>
+                    </div>
+                    <div id="backup-list">
+                        <!-- Backups will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-network" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Network Settings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Server Port</label>
+                            <input type="number" id="server-port-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">RCON Port</label>
+                            <input type="number" id="rcon-port-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-startup" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Startup Configuration</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Startup Command</label>
+                            <textarea id="startup-command" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Environment Variables</label>
+                            <div id="env-vars" class="space-y-2">
+                                <!-- Environment variables will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Server Settings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Server Name</label>
+                            <input type="text" id="server-name-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Memory Limit (MB)</label>
+                            <input type="number" id="memory-limit-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-activity" class="tab-content hidden">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Activity Log</h3>
+                    <div id="activity-log" class="space-y-2">
+                        <!-- Activity log will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 border-t border-gray-700 py-4 mt-8">
+            <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
+                <p>Powered by <span class="text-blue-400 font-semibold">MAX Panel</span> • Created by <span class="text-blue-400">maxboy</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="server.js"></script>
+</body>
+</html>

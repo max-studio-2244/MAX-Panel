@@ -1,1 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MAX Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-400 mb-2">
+                <i class="fas fa-rocket mr-2"></i>MAX Panel
+            </h1>
+            <p class="text-gray-400">Game Server Management Platform</p>
+        </div>
 
+        <!-- Login Form -->
+        <div id="login-form" class="bg-gray-800 rounded-lg p-8 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Sign In</h2>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Username or Email</label>
+                        <input type="text" id="username" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-gray-400 hover:text-white">
+                                <i class="fas fa-eye" id="password-toggle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="remember" class="mr-2">
+                            <span class="text-sm text-gray-400">Remember me</span>
+                        </label>
+                        <a href="#" onclick="showForgotPassword()" class="text-sm text-blue-400 hover:text-blue-300">Forgot password?</a>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg mt-6 font-medium">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <p class="text-gray-400">Don't have an account? 
+                    <a href="#" onclick="showRegister()" class="text-blue-400 hover:text-blue-300">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form" class="bg-gray-800 rounded-lg p-8 shadow-lg hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Create Account</h2>
+            
+            <form onsubmit="handleRegister(event)">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">First Name</label>
+                            <input type="text" id="reg-first-name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Last Name</label>
+                            <input type="text" id="reg-last-name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Username</label>
+                        <input type="text" id="reg-username" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="reg-email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="reg-password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg mt-6 font-medium">
+                    <i class="fas fa-user-plus mr-2"></i>Create Account
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <p class="text-gray-400">Already have an account? 
+                    <a href="#" onclick="showLogin()" class="text-blue-400 hover:text-blue-300">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgot-form" class="bg-gray-800 rounded-lg p-8 shadow-lg hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Reset Password</h2>
+            
+            <form onsubmit="handleForgotPassword(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" id="forgot-email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                        <p class="text-sm text-gray-400 mt-2">We'll send you a link to reset your password</p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 py-3 rounded-lg mt-6 font-medium">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Reset Link
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <a href="#" onclick="showLogin()" class="text-blue-400 hover:text-blue-300">
+                    <i class="fas fa-arrow-left mr-1"></i>Back to Sign In
+                </a>
+            </div>
+        </div>
+
+        <!-- 2FA Form -->
+        <div id="twofa-form" class="bg-gray-800 rounded-lg p-8 shadow-lg hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Two-Factor Authentication</h2>
+            
+            <form onsubmit="handleTwoFA(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Authentication Code</label>
+                        <input type="text" id="twofa-code" required maxlength="6" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:outline-none focus:border-blue-500">
+                        <p class="text-sm text-gray-400 mt-2 text-center">Enter the 6-digit code from your authenticator app</p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg mt-6 font-medium">
+                    <i class="fas fa-shield-alt mr-2"></i>Verify Code
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <a href="#" onclick="showLogin()" class="text-blue-400 hover:text-blue-300">
+                    <i class="fas fa-arrow-left mr-1"></i>Back to Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-4">
+        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
+            <p>Powered by <span class="text-blue-400 font-semibold">MAX Panel</span> • Created by <span class="text-blue-400">maxboy</span></p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+</body>
+</html>

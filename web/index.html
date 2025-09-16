@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAX Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="app">
+        <!-- Header -->
+        <header class="bg-gray-800 shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-blue-400">
+                        <i class="fas fa-rocket mr-2"></i>MAX Panel
+                    </h1>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" onclick="showDashboard()" class="text-gray-300 hover:text-white">Dashboard</a>
+                        <a href="#" onclick="showServers()" class="text-gray-300 hover:text-white">Servers</a>
+                        <a href="#" onclick="showFileManager()" class="text-gray-300 hover:text-white">Files</a>
+                        <a href="#" onclick="showBackups()" class="text-gray-300 hover:text-white">Backups</a>
+                        <a href="#" onclick="showAdmin()" class="text-gray-300 hover:text-white" id="admin-link" style="display:none">Admin</a>
+                    </nav>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showCreateModal()" id="create-server-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg" style="display:none">
+                            <i class="fas fa-plus mr-2"></i>New Server
+                        </button>
+                        <div class="relative">
+                            <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-300 hover:text-white">
+                                <i class="fas fa-user-circle text-2xl"></i>
+                                <span id="username-display">Guest</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg hidden">
+                                <a href="#" onclick="showProfile()" class="block px-4 py-2 text-gray-300 hover:bg-gray-700">Profile</a>
+                                <a href="#" onclick="logout()" class="block px-4 py-2 text-gray-300 hover:bg-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Servers Grid -->
+            <div id="servers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Server cards will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="text-center py-16 hidden">
+                <i class="fas fa-server text-6xl text-gray-600 mb-4"></i>
+                <h2 class="text-2xl font-semibold text-gray-400 mb-2">No Servers Assigned</h2>
+                <p class="text-gray-500 mb-6">Contact your administrator to get access to servers</p>
+                <div id="empty-admin-actions" style="display:none">
+                    <button onclick="showCreateModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Create Server
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Create Server Modal -->
+        <div id="create-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold">Create New Server</h3>
+                    <button onclick="hideCreateModal()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="create-form" onsubmit="createServer(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Server Name</label>
+                            <input type="text" name="name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Game</label>
+                            <select name="game" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                                <option value="">Select Game</option>
+                                <option value="minecraft">Minecraft</option>
+                                <option value="csgo">CS:GO</option>
+                                <option value="rust">Rust</option>
+                                <option value="ark">ARK</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Port</label>
+                            <input type="number" name="port" required min="1024" max="65535" value="25565" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Memory (MB)</label>
+                            <input type="number" name="memory" required min="512" max="8192" value="1024" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">CPU Cores</label>
+                            <input type="number" name="cpu" required min="0.5" max="4" step="0.5" value="1" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="hideCreateModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Create Server</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Console Modal -->
+        <div id="console-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg w-full max-w-4xl mx-4 h-3/4 flex flex-col">
+                <div class="flex items-center justify-between p-4 border-b border-gray-700">
+                    <h3 class="text-xl font-semibold">Server Console</h3>
+                    <button onclick="hideConsoleModal()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-1 p-4">
+                    <div id="console-output" class="bg-black rounded-lg p-4 h-full overflow-y-auto font-mono text-sm text-green-400"></div>
+                </div>
+                
+                <div class="p-4 border-t border-gray-700">
+                    <div class="flex space-x-2">
+                        <input type="text" id="console-input" placeholder="Enter command..." class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        <button onclick="sendCommand()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
+            <p>Powered by <span class="text-blue-400 font-semibold">MAX Panel</span> • Created by <span class="text-blue-400">maxboy</span></p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

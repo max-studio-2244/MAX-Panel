@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAX Panel - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="admin-app">
+        <!-- Admin Header -->
+        <header class="bg-gray-800 shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-blue-400">
+                        <i class="fas fa-cog mr-2"></i>MAX Panel Admin
+                    </h1>
+                    <a href="/" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Panel
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Navigation -->
+        <nav class="bg-gray-800 border-t border-gray-700">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-8">
+                    <button onclick="showAdminSection('dashboard')" class="admin-nav-btn active py-4 px-2 border-b-2 border-blue-500 text-blue-400">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </button>
+                    <button onclick="showAdminSection('users')" class="admin-nav-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-users mr-2"></i>Users
+                    </button>
+                    <button onclick="showAdminSection('eggs')" class="admin-nav-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-egg mr-2"></i>Game Eggs
+                    </button>
+                    <button onclick="showAdminSection('nodes')" class="admin-nav-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-server mr-2"></i>Nodes
+                    </button>
+                    <button onclick="showAdminSection('settings')" class="admin-nav-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                    <button onclick="showAdminSection('logs')" class="admin-nav-btn py-4 px-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-list mr-2"></i>Activity Logs
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Admin Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Dashboard Section -->
+            <div id="admin-dashboard" class="admin-section">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-500 bg-opacity-20">
+                                <i class="fas fa-server text-blue-400 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-gray-400">Total Servers</p>
+                                <p class="text-2xl font-semibold" id="total-servers">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-500 bg-opacity-20">
+                                <i class="fas fa-users text-green-400 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-gray-400">Total Users</p>
+                                <p class="text-2xl font-semibold" id="total-users">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-500 bg-opacity-20">
+                                <i class="fas fa-memory text-yellow-400 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-gray-400">Memory Used</p>
+                                <p class="text-2xl font-semibold" id="memory-used">0 GB</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-purple-500 bg-opacity-20">
+                                <i class="fas fa-hdd text-purple-400 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-gray-400">Disk Used</p>
+                                <p class="text-2xl font-semibold" id="disk-used">0 GB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                        <div id="recent-activity" class="space-y-3">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">System Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>Panel Status</span>
+                                <span class="text-green-400">Online</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Database</span>
+                                <span class="text-green-400">Connected</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Docker</span>
+                                <span class="text-green-400">Running</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="admin-users" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">User Management</h2>
+                    <button onclick="showCreateUserModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Create User
+                    </button>
+                </div>
+                <div class="bg-gray-800 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left">User</th>
+                                <th class="px-6 py-3 text-left">Email</th>
+                                <th class="px-6 py-3 text-left">Role</th>
+                                <th class="px-6 py-3 text-left">Created</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Game Eggs Section -->
+            <div id="admin-eggs" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Game Eggs Management</h2>
+                    <div class="space-x-2">
+                        <button onclick="importEgg()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+                            <i class="fas fa-download mr-2"></i>Import Egg
+                        </button>
+                        <button onclick="showCreateEggModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Create Egg
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="eggs-grid">
+                    <!-- Eggs will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Nodes Section -->
+            <div id="admin-nodes" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Node Management</h2>
+                    <button onclick="showCreateNodeModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Add Node
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="nodes-grid">
+                    <!-- Nodes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="admin-settings" class="admin-section hidden">
+                <h2 class="text-2xl font-bold mb-6">Panel Settings</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Appearance</h3>
+                        <form id="appearance-form">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Panel Name</label>
+                                    <input type="text" id="panel-name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Primary Color</label>
+                                    <input type="color" id="primary-color" class="w-full h-10 bg-gray-700 border border-gray-600 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Theme</label>
+                                    <select id="theme" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                                        <option value="dark">Dark</option>
+                                        <option value="light">Light</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="animations" class="mr-2">
+                                    <label for="animations">Enable Animations</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Logo Upload</h3>
+                        <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-400 mb-4">Drop your logo here or click to browse</p>
+                            <input type="file" id="logo-upload" accept="image/*" class="hidden">
+                            <button onclick="document.getElementById('logo-upload').click()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                                Choose File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button onclick="saveSettings()" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg">
+                        <i class="fas fa-save mr-2"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Activity Logs Section -->
+            <div id="admin-logs" class="admin-section hidden">
+                <h2 class="text-2xl font-bold mb-6">Activity Logs</h2>
+                <div class="bg-gray-800 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Time</th>
+                                <th class="px-6 py-3 text-left">User</th>
+                                <th class="px-6 py-3 text-left">Action</th>
+                                <th class="px-6 py-3 text-left">IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table">
+                            <!-- Logs will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
