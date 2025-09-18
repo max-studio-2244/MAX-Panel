@@ -2,6 +2,8 @@
   "template": "go",
   "container": {
     "port": 8080,
-    "startScript": "go run codesandbox-main.go"
-  }
+    "startScript": "go run *.go",
+    "node": "18"
+  },
+  "view": "browser"
 }
