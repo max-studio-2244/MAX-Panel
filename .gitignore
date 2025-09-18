@@ -1,11 +1,12 @@
-# Binaries for programs and plugins
+# Binaries
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+panel
 
-# Test binary, built with `go test -c`
+# Test binary
 *.test
 
 # Output of the go coverage tool
@@ -37,6 +38,7 @@ data/
 backups/
 logs/
 uploads/
+servers/
 
 # Docker volumes
 docker-data/

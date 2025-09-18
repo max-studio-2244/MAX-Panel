@@ -1,0 +1,7 @@
+{
+  "template": "go",
+  "container": {
+    "port": 8080,
+    "startScript": "go run codesandbox-main.go"
+  }
+}

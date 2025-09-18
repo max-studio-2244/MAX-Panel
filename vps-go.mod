@@ -1,4 +1,4 @@
-module max-panel
+module max-panel-vps
 
 go 1.21
 

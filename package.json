@@ -1,0 +1,17 @@
+{
+  "name": "max-panel-codesandbox",
+  "version": "1.0.0",
+  "description": "MAX Panel - Game Server Management for CodeSandbox",
+  "main": "main.go",
+  "scripts": {
+    "start": "go run *.go",
+    "dev": "go run *.go",
+    "build": "go build -o panel *.go"
+  },
+  "keywords": ["game", "server", "panel", "management", "codesandbox"],
+  "author": "MAX Panel",
+  "license": "MIT",
+  "engines": {
+    "go": "1.21"
+  }
+}

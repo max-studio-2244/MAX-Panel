@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  maxpanel:
+    build:
+      context: .
+      dockerfile: Dockerfile.vps
+    ports:
+      - "8080:8080"
+      - "25565:25565"  # Minecraft
+      - "27015:27015"  # Source games
+      - "28015:28015"  # Rust
+      - "7777:7777"    # ARK
+      - "3000-3010:3000-3010"  # Custom games
+    volumes:
+      - ./data:/app/data
+      - ./servers:/app/servers
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+    environment:
+      - PORT=8080
+      - PANEL_NAME=MAX Panel VPS
+      - DOMAIN=${DOMAIN:-}
+    restart: unless-stopped
+    networks:
+      - maxpanel
+
+  # Reverse proxy for custom domain
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - maxpanel
+    networks:
+      - maxpanel
+    restart: unless-stopped
+
+networks:
+  maxpanel:
+    driver: bridge
