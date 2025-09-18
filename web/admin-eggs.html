@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egg Management - MAX Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Egg Management</h1>
+            <button onclick="showCreateEggModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                <i class="fas fa-plus mr-2"></i>Create Egg
+            </button>
+        </div>
+
+        <!-- Eggs Grid -->
+        <div id="eggs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Eggs will be loaded here -->
+        </div>
+
+        <!-- Create/Edit Egg Modal -->
+        <div id="egg-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold" id="modal-title">Create New Egg</h3>
+                    <button onclick="hideEggModal()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="egg-form" onsubmit="saveEgg(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Name</label>
+                            <input type="text" name="name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Game</label>
+                            <input type="text" name="game" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Version</label>
+                            <input type="text" name="version" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Build Number</label>
+                            <input type="text" name="build_number" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Category</label>
+                            <select name="category" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                                <option value="Minecraft">Minecraft</option>
+                                <option value="Source Engine">Source Engine</option>
+                                <option value="Web">Web</option>
+                                <option value="Survival">Survival</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Docker Image</label>
+                            <input type="text" name="image" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Min Memory (MB)</label>
+                            <input type="number" name="min_memory" value="512" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Max Memory (MB)</label>
+                            <input type="number" name="max_memory" value="8192" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Description</label>
+                        <textarea name="description" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Start Command</label>
+                        <textarea name="start_command" rows="2" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="java -Xms{MEMORY}M -Xmx{MEMORY}M -jar server.jar nogui"></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Stop Command</label>
+                        <input type="text" name="stop_command" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="stop">
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Install Script</label>
+                        <textarea name="install_script" rows="4" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="#!/bin/bash&#10;wget https://example.com/server.jar"></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Config Files (JSON)</label>
+                        <textarea name="config_files" rows="4" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder='{"server.properties": "server-port={PORT}\\nmotd=My Server"}'></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Environment Variables (JSON)</label>
+                        <textarea name="environment" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder='{"EULA": "true", "TYPE": "PAPER"}'></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2">Ports (JSON)</label>
+                        <textarea name="ports" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder='{"game": 25565, "rcon": 25575}'></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="hideEggModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Save Egg</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Server Assignment Modal -->
+        <div id="assign-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold">Create Server from Egg</h3>
+                    <button onclick="hideAssignModal()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="assign-form" onsubmit="createServerFromEgg(event)">
+                    <input type="hidden" name="egg_id" id="assign-egg-id">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Server Name</label>
+                            <input type="text" name="name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Port</label>
+                            <input type="number" name="port" required min="1024" max="65535" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Memory (MB)</label>
+                            <input type="number" name="memory" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Assign to User</label>
+                            <select name="owner_id" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                                <option value="">Select User</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="hideAssignModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">Create Server</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-eggs.js"></script>
+</body>
+</html>

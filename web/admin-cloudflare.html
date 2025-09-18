@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Setup - MAX Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <h1 class="text-3xl font-bold mb-8">Cloudflare Domain Setup</h1>
+
+            <!-- Status Card -->
+            <div id="status-card" class="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold">Domain Status</h3>
+                        <p id="domain-status" class="text-gray-400">Not configured</p>
+                    </div>
+                    <div id="status-icon" class="text-red-400">
+                        <i class="fas fa-times-circle text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Form -->
+            <div id="setup-form" class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4">Configure Cloudflare</h3>
+                
+                <form onsubmit="setupCloudflare(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Domain Name</label>
+                            <input type="text" name="domain" required placeholder="panel.yourdomain.com" 
+                                   class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">The subdomain you want to use for your panel</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Cloudflare Email</label>
+                            <input type="email" name="email" required placeholder="your@email.com"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Cloudflare API Token</label>
+                            <input type="password" name="api_token" required placeholder="Your Cloudflare API Token"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">
+                                <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" class="text-blue-400 hover:underline">
+                                    Create API Token
+                                </a> with Zone:Edit permissions
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Zone ID</label>
+                            <input type="text" name="zone_id" required placeholder="Your Cloudflare Zone ID"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">Found in your domain's overview page on Cloudflare</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="removeCloudflare()" id="remove-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg hidden">
+                            Remove Configuration
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                            Setup Cloudflare
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Instructions -->
+            <div class="bg-gray-800 rounded-lg p-6 mt-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4">Setup Instructions</h3>
+                
+                <div class="space-y-4 text-sm">
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+                        <div>
+                            <p class="font-medium">Get Cloudflare API Token</p>
+                            <p class="text-gray-400">Go to Cloudflare Dashboard → My Profile → API Tokens → Create Token</p>
+                            <p class="text-gray-400">Use "Custom token" with Zone:Edit permissions for your domain</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                        <div>
+                            <p class="font-medium">Find Zone ID</p>
+                            <p class="text-gray-400">Go to your domain overview in Cloudflare Dashboard</p>
+                            <p class="text-gray-400">Copy the Zone ID from the right sidebar</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
+                        <div>
+                            <p class="font-medium">Configure Domain</p>
+                            <p class="text-gray-400">Enter your desired subdomain (e.g., panel.yourdomain.com)</p>
+                            <p class="text-gray-400">The system will automatically create DNS records and SSL certificates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="bg-gray-800 rounded-lg p-6 mt-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4">What This Setup Includes</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>Automatic DNS record creation</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>SSL certificate generation</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>Cloudflare proxy protection</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>Automatic HTTPS redirect</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>Wildcard subdomain support</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span>DDoS protection</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load current configuration on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCloudflareConfig();
+        });
+
+        async function loadCloudflareConfig() {
+            try {
+                const response = await fetch('/api/admin/cloudflare/config');
+                const config = await response.json();
+                
+                if (config.configured) {
+                    document.getElementById('domain-status').textContent = `Configured: ${config.domain}`;
+                    document.getElementById('status-icon').innerHTML = '<i class="fas fa-check-circle text-green-400 text-2xl"></i>';
+                    document.getElementById('remove-btn').classList.remove('hidden');
+                    
+                    // Pre-fill form
+                    document.querySelector('input[name="domain"]').value = config.domain;
+                    document.querySelector('input[name="email"]').value = config.email || '';
+                }
+            } catch (error) {
+                console.error('Failed to load Cloudflare config:', error);
+            }
+        }
+
+        async function setupCloudflare(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const config = {
+                domain: formData.get('domain'),
+                email: formData.get('email'),
+                api_token: formData.get('api_token'),
+                zone_id: formData.get('zone_id')
+            };
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Setting up...';
+
+            try {
+                const response = await fetch('/api/admin/cloudflare/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showNotification('Cloudflare setup completed successfully!', 'success');
+                    loadCloudflareConfig();
+                    
+                    // Show success details
+                    setTimeout(() => {
+                        alert(`Setup completed!\\n\\nDomain: ${result.domain}\\nSSL: ${result.ssl}\\nRecords: ${result.records.length} created\\n\\nYour panel is now accessible at https://${result.domain}`);
+                    }, 1000);
+                } else {
+                    showNotification(result.error || 'Setup failed', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error occurred', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Setup Cloudflare';
+            }
+        }
+
+        async function removeCloudflare() {
+            if (!confirm('Are you sure you want to remove Cloudflare configuration? This will disable your custom domain.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/cloudflare/remove', {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showNotification('Cloudflare configuration removed', 'success');
+                    loadCloudflareConfig();
+                    
+                    // Reset form
+                    document.querySelector('form').reset();
+                    document.getElementById('domain-status').textContent = 'Not configured';
+                    document.getElementById('status-icon').innerHTML = '<i class="fas fa-times-circle text-red-400 text-2xl"></i>';
+                    document.getElementById('remove-btn').classList.add('hidden');
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to remove configuration', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error occurred', 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
